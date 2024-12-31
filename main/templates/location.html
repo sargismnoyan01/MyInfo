@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Location</title>
+</head>
+<body>
+    <h1>User Location</h1>
+    <p id="location">Fetching your location...</p>
+
+    <script>
+        fetch('/location/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('location').innerText = "Error: " + data.error;
+                } else {
+                    document.getElementById('location').innerText = `
+                        Country: ${data.country}, Region: ${data.region}, City: ${data.city},
+                        Latitude: ${data.latitude}, Longitude: ${data.longitude}
+                    `;
+                }
+            });
+    </script>
+</body>
+</html>
