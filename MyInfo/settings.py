@@ -21,7 +21,7 @@ SECRET_KEY = 'django-insecure-4qmdb4m#m+n-2u)6s=*1yqawqow$9a(_%jgylgyjtgzx2wp811
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['*','13.60.66.19']
+ALLOWED_HOSTS = ['*']
 
 
 
@@ -129,9 +129,6 @@ EMAIL_HOST_PASSWORD='dmcjynjyppotdnej'
 EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
-<<<<<<< HEAD
 
 
      
-=======
->>>>>>> f20e0d8066da58108f77bca9230f50fc7718d367
