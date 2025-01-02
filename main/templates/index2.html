@@ -105,7 +105,9 @@
                       <p><span class="title-s">Name: </span> <span>{{ maininfo.site_owner }}</span></p>
                       <p><span class="title-s">Profile: </span> <span>{{ maininfo.profile }}</span></p>
                       <p><span class="title-s">Email: </span> <span>{{ maininfo.email }}</span></p>
+                      {% if maininfo.phone %}
                       <p><span class="title-s">Phone: </span> <span>{{ maininfo.phone }}</span></p>
+                      {% endif %}
                       <p><span class="title-s">Current workplace: </span> <span>{{ maininfo.current_work }}</span></p>
 
                     </div>
@@ -316,7 +318,9 @@
                       {% if maininfo.address_2 %}
                       <li><span class="ion-ios-location"></span> {{ maininfo.address_2 }}</li>
                       {% endif %}
+                      {% if maininfo.phone %}
                       <li><span class="ion-ios-telephone"></span> {{ maininfo.phone }}</li>
+                      {% endif %}
                       <li><span class="ion-email"></span> {{ maininfo.email }}</li>
                     </ul>
                   </div>

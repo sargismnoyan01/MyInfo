@@ -7,41 +7,45 @@ from .forms import *
 from MyInfo.settings import EMAIL_HOST_USER
 from django.core.mail import EmailMessage
 from django.http import JsonResponse
+from user_agents import parse
+import requests
+from bs4 import BeautifulSoup
 
 
 
-def get_user_ip(request):
-    user_ip = request.META.get('HTTP_X_FORWARDED_FOR')
-    if user_ip:
-        ip = user_ip.split(',')[0]
+def InfoPage(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
     else:
         ip = request.META.get('REMOTE_ADDR')
-    return ip
-
-def get_user_city(ip):
-    api_key = '2fc240411f3c73112c581b281464ea10'
-    url = f'http://api.ipstack.com/{ip}?access_key={api_key}'
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  
-        data = response.json()
-        return data.get('city')
-    except requests.RequestException as e:
-        print(f'Error fetching data from ipstack: {e}')
-        return None
-
-def get_user_location(request):
-    ip = get_user_ip(request)
-    city = get_user_city(ip)
-    return city,ip
+    referrer = request.META.get('HTTP_REFERER', 'Unknown')
+    url = "https://www.mypersonalip.com/hy/աշխարհագրական-ip-հասցե"
+    response = requests.get(url)
+    html_content = response.text
+    soup = BeautifulSoup(html_content, 'html.parser')
+    location_element = soup.find('td', text=lambda x: x and ', ' in x)  
+    location = location_element.get_text(strip=True) if location_element else "Unknown Location"
+    user_agent_string = request.META.get('HTTP_USER_AGENT', '')
+    user_agent = parse(user_agent_string)
+    
+    UserAllInformation.objects.create(
+        location=location,
+        come_from=referrer,
+        device=user_agent.device.family or "Unknown Device",
+        browser=user_agent.browser.family or "Unknown Browser",
+        browser_version=user_agent.browser.version_string or "Unknown Version",
+        device_os=user_agent.os.family or "Unknown OS",
+        ip_address=ip,
+        os_version=user_agent.os.version_string or "Unknown OS Version",
+        is_pc=user_agent.is_pc,
+        is_mobile=user_agent.is_mobile,
+        is_tablet=user_agent.is_tablet
+    )
+    return redirect('home')
 
 
 def HomePage(request):
-    city,ip = get_user_location(request)
-    if city is not None:
-        UserInfo.objects.create(city = city)
-    else:
-        UserInfo.objects.create(city = ip)
     maininfo = MainInformations.objects.first()
     forskills = ForSkills.objects.all()
     about = About.objects.all()
@@ -68,7 +72,7 @@ def HomePage(request):
             subject = f'Hello {obj.name}. Thank you for your opinion.'
             body = 'I will respond to you soon.'
             from_email = EMAIL_HOST_USER
-            to = [obj.email]
+            to = [obj.email,EMAIL_HOST_USER]
             email = EmailMessage(
                 subject=subject,
                 body=body,
@@ -77,6 +81,7 @@ def HomePage(request):
             )
             obj.save()
             email.send()
+
             return JsonResponse({'message': 'Message sent successfully!'}, status=200)
         else:
             return JsonResponse({'error': 'Invalid form data'}, status=400)
@@ -99,25 +104,3 @@ def BlogPage(request,id,title):
 
 
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
-
-def get_location_from_ip(ip):
-    try:
-        response = requests.get(f'http://ip-api.com/json/{ip}')
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return {"error": "Unable to fetch location from IP-API"}
-    except Exception as e:
-        return {"error": str(e)}
-
-def user_location_view(request):
-    ip = get_client_ip(request)
-    location = get_location_from_ip(ip)
-    return JsonResponse(location)

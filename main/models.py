@@ -2,6 +2,25 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 
+
+
+class UserAllInformation(models.Model):
+    location = models.CharField('User Location',max_length=610)
+    come_from = models.CharField('User come from this web-site',max_length=610)
+    user_date = models.DateTimeField('User come date',auto_now_add=True)
+    device = models.CharField('Phone name',max_length=610)
+    browser = models.CharField('Browser',max_length=255)
+    browser_version = models.CharField('Browser version',max_length=255)
+    device_os = models.CharField('OS name',max_length=255)
+    ip_address = models.CharField('IP address',max_length=255)
+    os_version = models.CharField('OS_version',max_length=255)
+    is_pc = models.BooleanField('Is PC')
+    is_mobile = models.BooleanField('Is Mobile')
+    is_tablet = models.BooleanField('Is Tablet')
+
+    def __str__(self):
+        return f'{self.location} {self.come_from} {self.device}'
+
 class MainInformations(models.Model):
     icon = models.ImageField('Icon',upload_to='Icon',null=True)
     site_name = models.CharField('Site name',max_length=255)
@@ -9,7 +28,7 @@ class MainInformations(models.Model):
     img_back = models.ImageField('Image')
     profile = models.CharField('Profile',max_length=255)
     email = models.EmailField('Email')
-    phone = PhoneNumberField('Phone number')
+    phone = PhoneNumberField('Phone number',blank=True)
     owner_img = models.ImageField('Owner Image',upload_to='Owner_media',null=True)
     current_work = models.CharField('Current workplace',max_length=255,null=True)
     positions = models.TextField('Positions',null=True)
@@ -163,3 +182,10 @@ class UserInfo(models.Model):
     class Meta:
         verbose_name='User Information'
         verbose_name_plural='User Informations'
+
+class DivaceType(models.Model):
+    info = models.JSONField('User info')
+
+
+    def __str__(self):
+        return f'{self.info}'

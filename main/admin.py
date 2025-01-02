@@ -10,6 +10,15 @@ admin.site.register(SubWork)
 admin.site.register(SubAbout)
 admin.site.register(SiteURL)
 admin.site.register(UserInfo)
+admin.site.register(DivaceType)
+
+
+
+@admin.register(UserAllInformation)
+class UserInformationModelAdmin(admin.ModelAdmin):
+    list_display = ['location','user_date','device','come_from']
+    list_display_links = ['location','user_date','device','come_from']
+    search_fields = ['location','user_date','device','come_from']
 
 @admin.register(MainInformations)
 class MainImformationMidelAdmin(admin.ModelAdmin):
